@@ -4,6 +4,7 @@ namespace WPGraphQL\Type\PostObject\Mutation;
 
 use GraphQL\Error\UserError;
 use GraphQLRelay\Relay;
+use WPGraphQL\Type\WPInputObjectType;
 use WPGraphQL\Types;
 
 /**
@@ -29,18 +30,21 @@ class PostObjectUpdate {
 	 */
 	public static function mutate( \WP_Post_Type $post_type_object ) {
 
-		if ( ! empty( $post_type_object->graphql_single_name ) && empty( self::$mutation[ $post_type_object->graphql_single_name ] ) ) :
+		if (
+			! empty( $post_type_object->graphql_single_name ) &&
+			empty( self::$mutation[ $post_type_object->graphql_single_name ] )
+		) {
 
 			/**
 			 * Set the name of the mutation being performed
 			 */
 			$mutation_name = 'Update' . ucwords( $post_type_object->graphql_single_name );
 
-			self::$mutation[ $post_type_object->graphql_single_name ] = Relay::mutationWithClientMutationId([
-				'name'                => esc_html( $mutation_name ),
+			self::$mutation[ $post_type_object->graphql_single_name ] = Relay::mutationWithClientMutationId( [
+				'name'                => $mutation_name,
 				// translators: The placeholder is the name of the post type being updated
 				'description'         => sprintf( __( 'Updates %1$s objects', 'wp-graphql' ), $post_type_object->graphql_single_name ),
-				'inputFields'         => self::input_fields( $post_type_object ),
+				'inputFields'         => WPInputObjectType::prepare_fields( self::input_fields( $post_type_object ), $mutation_name ),
 				'outputFields'        => [
 					$post_type_object->graphql_single_name => [
 						'type'    => Types::post_object( $post_type_object->name ),
@@ -140,9 +144,9 @@ class PostObjectUpdate {
 					];
 
 				},
-			]);
+			] );
 
-		endif; // End if().
+		}
 
 		return ! empty( self::$mutation[ $post_type_object->graphql_single_name ] ) ? self::$mutation[ $post_type_object->graphql_single_name ] : null;
 

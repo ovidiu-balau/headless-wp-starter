@@ -4,6 +4,7 @@ namespace WPGraphQL\Type\PostObject\Mutation;
 
 use GraphQL\Error\UserError;
 use GraphQLRelay\Relay;
+use WPGraphQL\Type\WPInputObjectType;
 use WPGraphQL\Types;
 
 /**
@@ -29,7 +30,10 @@ class PostObjectCreate {
 	 */
 	public static function mutate( \WP_Post_Type $post_type_object ) {
 
-		if ( ! empty( $post_type_object->graphql_single_name ) && empty( self::$mutation[ $post_type_object->graphql_single_name ] ) ) :
+		if (
+			! empty( $post_type_object->graphql_single_name ) &&
+			empty( self::$mutation[ $post_type_object->graphql_single_name ] )
+		) {
 
 			/**
 			 * Set the name of the mutation being performed
@@ -37,10 +41,10 @@ class PostObjectCreate {
 			$mutation_name = 'Create' . ucwords( $post_type_object->graphql_single_name );
 
 			self::$mutation[ $post_type_object->graphql_single_name ] = Relay::mutationWithClientMutationId( [
-				'name'                => esc_html( $mutation_name ),
+				'name'                => $mutation_name,
 				// translators: The placeholder is the name of the object type
 				'description'         => sprintf( __( 'Create %1$s objects', 'wp-graphql' ), $post_type_object->graphql_single_name ),
-				'inputFields'         => PostObjectMutation::input_fields( $post_type_object ),
+				'inputFields'         => WPInputObjectType::prepare_fields( PostObjectMutation::input_fields( $post_type_object ), $mutation_name ),
 				'outputFields'        => [
 					$post_type_object->graphql_single_name => [
 						'type'    => Types::post_object( $post_type_object->name ),
@@ -77,8 +81,8 @@ class PostObjectCreate {
 
 					/**
 					 * @todo: When we support assigning terms and setting posts as "sticky" we need to check permissions
-					 * @see:https://github.com/WordPress/WordPress/blob/e357195ce303017d517aff944644a7a1232926f7/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L504-L506
-					 * @see: https://github.com/WordPress/WordPress/blob/e357195ce303017d517aff944644a7a1232926f7/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L496-L498
+					 * @see :https://github.com/WordPress/WordPress/blob/e357195ce303017d517aff944644a7a1232926f7/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L504-L506
+					 * @see : https://github.com/WordPress/WordPress/blob/e357195ce303017d517aff944644a7a1232926f7/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L496-L498
 					 */
 
 					/**
@@ -128,7 +132,7 @@ class PostObjectCreate {
 
 			] );
 
-		endif; // End if().
+		}
 
 		return ! empty( self::$mutation[ $post_type_object->graphql_single_name ] ) ? self::$mutation[ $post_type_object->graphql_single_name ] : null;
 
