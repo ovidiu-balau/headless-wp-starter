@@ -18,8 +18,8 @@ const Footer = () => (
         </p>
         <p>
             👋 Need help with your publishing platform?{" "}
-            <Link href="mailto:hello@postlight.com?subject=Partner+with+Postlight+on+a+headless+CMS+project">
-                <a>Say hi.</a>
+            <Link href="http://localhost:8080/routes/">
+                <a>Routes</a>
             </Link>
         </p>
     </div>

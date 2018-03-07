@@ -14,7 +14,7 @@ const headerImageStyle = {
 class Index extends Component {
     static async getInitialProps(context) {
         const pageRes = await fetch(
-            `${Config.apiUrl}/wp-json/postlight/v1/page?slug=welcome`
+            `${Config.apiUrl}/wp-json/ticklemedia/v1/page?slug=welcome`
         );
         const page = await pageRes.json();
         const postsRes = await fetch(

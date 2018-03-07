@@ -14,7 +14,7 @@ add_action( 'rest_api_init', function () {
 	$page_slug_arg = array_merge( $slug_arg, array( 'description' => 'String representing a valid WordPress page slug' ) );
 
 	// Register routes
-	register_rest_route( 'postlight/v1', '/post', array(
+	register_rest_route( 'ticklemedia/v1', '/post', array(
 		'methods'  => 'GET',
 		'callback' => 'rest_get_post',
 		'args' => array(
@@ -22,15 +22,29 @@ add_action( 'rest_api_init', function () {
 		)
 	) );
 
-	register_rest_route( 'postlight/v1', '/page', array(
+	register_rest_route( 'ticklemedia/v1', '/page', array(
 		'methods'  => 'GET',
 		'callback' => 'rest_get_page',
 		'args' => array(
 			'slug' => array_merge( $page_slug_arg, array( 'required' => true ) ),
 		)
 	) );
+    register_rest_route( 'ticklemedia/v1', '/company', array(
+        'methods'  => 'GET',
+        'callback' => 'rest_get_company',
+        'args' => array(
+            'slug' => array_merge( $page_slug_arg, array( 'required' => true ) ),
+        )
+    ) );
+    register_rest_route( 'ticklemedia/v1', '/page', array(
+        'methods'  => 'GET',
+        'callback' => 'rest_get_page',
+        'args' => array(
+            'slug' => array_merge( $page_slug_arg, array( 'required' => true ) ),
+        )
+    ) );
 
-	register_rest_route('postlight/v1', '/post/preview', array(
+	register_rest_route('ticklemedia/v1', '/post/preview', array(
 		'methods'  => 'GET',
 		'callback' => 'rest_get_post_preview',
 		'args' => array(
@@ -49,26 +63,6 @@ add_action( 'rest_api_init', function () {
 });
 
 /**
- * Respond to a REST API request to get post data.
- *
- * @param WP_REST_Request $request
- * @return WP_REST_Response
- */
-function rest_get_post( WP_REST_Request $request ) {
-	return rest_get_content( $request, 'post', __FUNCTION__ );
-}
-
-/**
- * Respond to a REST API request to get page data.
- *
- * @param WP_REST_Request $request
- * @return WP_REST_Response
- */
-function rest_get_page( WP_REST_Request $request ) {
-	return rest_get_content( $request, 'page', __FUNCTION__ );
-}
-
-/**
  * Respond to a REST API request to get post or page data.
  * * Handles changed slugs
  * * Doesn't return posts whose status isn't published
@@ -80,7 +74,7 @@ function rest_get_page( WP_REST_Request $request ) {
  * @return WP_REST_Response
  */
 function rest_get_content( WP_REST_Request $request, $type, $function_name ) {
-	if ( ! in_array( $type, array ( 'post', 'page' ) ) ) {
+	if ( ! in_array( $type, array ( 'post', 'company', 'page' ) ) ) {
 		$type = 'post';
 	}
 	$slug = $request->get_param( 'slug');
@@ -88,7 +82,7 @@ function rest_get_content( WP_REST_Request $request, $type, $function_name ) {
 		return new WP_Error(
 			$function_name,
 			$slug . ' ' . $type . ' does not exist',
-			array( 'status' => 404 )
+			array( 'status' => 404)
 		);
 	};
 
@@ -113,7 +107,7 @@ function rest_get_content( WP_REST_Request $request, $type, $function_name ) {
  * @return Post
  */
 function get_content_by_slug( $slug, $type = 'post' ) {
-	if ( ! in_array( $type, array ( 'post', 'page' ) ) ) {
+	if ( ! in_array( $type, array ( 'post', 'page', 'company', 'channel', 'webinar' ) ) ) {
 		$type = 'post';
 	}
 	$args = array(

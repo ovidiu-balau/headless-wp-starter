@@ -9,5 +9,8 @@
     "preinstall": "chmod +x install.sh && ./install.sh",
     "postinstall": "robo wordpress:setup",
     "start": "wp server"
+  },
+  "devDependencies": {
+    "eslint": "^4.18.2"
   }
 }
